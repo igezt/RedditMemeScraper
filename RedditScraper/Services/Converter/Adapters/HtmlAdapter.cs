@@ -7,7 +7,7 @@ namespace RedditScraper.Services.Converter.Adapters;
 
 public class HtmlAdapter : IAdapter
 {
-    private static readonly string OUTPUT_FILE_PATH = "./Services/Converter/Output/Html";
+    private static readonly string OUTPUT_FILE_PATH = "./Output/Html";
 
     public string Adapt(List<RedditPost> posts, string fileName)
     {
@@ -28,6 +28,8 @@ public class HtmlAdapter : IAdapter
         html.AppendLine("</html>");
 
         var currentDateTime = DateTime.Now.ToString();
+
+        Directory.CreateDirectory(OUTPUT_FILE_PATH);
 
         var outputFilePath = $"{OUTPUT_FILE_PATH}/{fileName}.html";
 

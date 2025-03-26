@@ -5,6 +5,7 @@ using RedditScraper.Services.Environment;
 using RedditScraper.Services.Reddit;
 using RedditScraper.Services.RedditAuth;
 using RedditScraper.Services.RedditClient;
+using RedditScraper.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,13 +15,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 DotEnv.Load();
-builder.Configuration.AddEnvironmentVariables();
-
-builder.Services.AddSingleton<IEnvService, EnvService>();
-builder.Services.AddSingleton<IRedditService, RedditService>();
-builder.Services.AddSingleton<IRedditAuthService, RedditAuthService>();
-builder.Services.AddSingleton<IRedditClient, RedditClient>();
-builder.Services.AddSingleton<IConverterService, ConverterService>();
 
 builder.Services.AddHttpClient();
 
@@ -32,6 +26,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+builder.Services.AddRedditScraperDependencies();
 
 app.UseHttpsRedirection();
 

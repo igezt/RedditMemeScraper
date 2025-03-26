@@ -21,8 +21,8 @@ public class ConverterService : IConverterService
             );
         }
 
-        // var fileName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
-        var fileName = "";
+        var fileName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
+        // var fileName = "";
 
         return adapter.Adapt(posts, fileName);
     }
