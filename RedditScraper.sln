@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedditScraper", "RedditScraper\RedditScraper.csproj", "{547C2806-2335-4EF3-85B7-2976B5942F9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot", "TelegramBot\TelegramBot.csproj", "{4B5BF028-AA58-4E11-9C03-1E528069771C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{547C2806-2335-4EF3-85B7-2976B5942F9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{547C2806-2335-4EF3-85B7-2976B5942F9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{547C2806-2335-4EF3-85B7-2976B5942F9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B5BF028-AA58-4E11-9C03-1E528069771C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B5BF028-AA58-4E11-9C03-1E528069771C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B5BF028-AA58-4E11-9C03-1E528069771C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B5BF028-AA58-4E11-9C03-1E528069771C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
