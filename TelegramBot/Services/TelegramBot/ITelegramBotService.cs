@@ -1,4 +1,4 @@
-namespace TelegramBot.Services.TelegramBotService;
+namespace TelegramBot.Services.TelegramBot;
 
 public interface ITelegramBotService
 {

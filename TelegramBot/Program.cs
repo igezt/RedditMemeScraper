@@ -1,7 +1,7 @@
 using dotenv.net;
 using RedditScraper.Services.Reddit;
 using RedditScraper.Startup;
-using TelegramBot.Services.TelegramBotService;
+using TelegramBot.Services.TelegramBot;
 
 DotEnv.Load();
 
