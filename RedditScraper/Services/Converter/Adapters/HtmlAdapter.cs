@@ -2,6 +2,7 @@ using System.Text;
 using Markdig;
 using Markdig.Renderers;
 using RedditScraper.Services.RedditClient.Models;
+using RedditScraper.Services.RedditPosts.Models;
 
 namespace RedditScraper.Services.Converter.Adapters;
 

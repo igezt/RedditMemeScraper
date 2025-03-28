@@ -1,4 +1,5 @@
 using RedditScraper.Services.RedditClient.Models;
+using RedditScraper.Services.RedditPosts.Models;
 
 namespace RedditScraper.Services.Converter.Adapters;
 

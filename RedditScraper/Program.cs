@@ -31,7 +31,4 @@ builder.Services.AddRedditScraperDependencies();
 
 app.UseHttpsRedirection();
 
-var posts = await app.Services.GetService<IRedditService>().GetTopPostsInPastDay("memes", 20);
-app.Services.GetService<IConverterService>().Convert(FileType.HTML, posts);
-
 app.Run();

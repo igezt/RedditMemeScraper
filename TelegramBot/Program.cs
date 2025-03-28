@@ -1,6 +1,7 @@
 using dotenv.net;
 using RedditScraper.Services.Reddit;
 using RedditScraper.Startup;
+using TelegramBot.Services.PastDay;
 using TelegramBot.Services.TelegramBot;
 
 DotEnv.Load();
@@ -14,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<ITelegramBotService, TelegramBotService>();
+builder.Services.AddSingleton<IPastDayService, PastDayService>();
 builder.Services.AddRedditScraperDependencies();
 
 var app = builder.Build();

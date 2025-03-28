@@ -3,6 +3,7 @@ using RedditScraper.Services.Environment;
 using RedditScraper.Services.Reddit;
 using RedditScraper.Services.RedditAuth;
 using RedditScraper.Services.RedditClient;
+using RedditScraper.Services.RedditPosts;
 
 namespace RedditScraper.Startup;
 
@@ -15,5 +16,7 @@ public static class RedditScraperDependencyConfig
         services.AddSingleton<IRedditAuthService, RedditAuthService>();
         services.AddSingleton<IRedditClient, RedditClient>();
         services.AddSingleton<IConverterService, ConverterService>();
+        services.AddSingleton<IRedditPostRepo, RedditPostRepo>();
+        services.AddSingleton<IRedditPostService, RedditPostService>();
     }
 }

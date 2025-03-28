@@ -1,5 +1,6 @@
 using System.Text.Json;
 using RedditScraper.Services.RedditClient.Models;
+using RedditScraper.Services.RedditPosts.Models;
 
 namespace RedditScraper.Services.RedditClient;
 

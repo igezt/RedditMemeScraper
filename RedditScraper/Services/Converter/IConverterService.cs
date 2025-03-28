@@ -1,5 +1,6 @@
 using RedditScraper.Services.Adapters.Models.Enums;
 using RedditScraper.Services.RedditClient.Models;
+using RedditScraper.Services.RedditPosts.Models;
 
 namespace RedditScraper.Services.Converter;
 

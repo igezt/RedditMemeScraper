@@ -4,14 +4,20 @@ using RedditScraper.Services.Adapters.Models.Enums;
 using RedditScraper.Services.Converter;
 using RedditScraper.Services.RedditClient;
 using RedditScraper.Services.RedditClient.Models;
+using RedditScraper.Services.RedditPosts;
+using RedditScraper.Services.RedditPosts.Models;
 
 namespace RedditScraper.Services.Reddit;
 
-public class RedditService(IRedditClient redditClient, IConverterService converterService)
-    : IRedditService
+public class RedditService(
+    IRedditClient redditClient,
+    IConverterService converterService,
+    IRedditPostService redditPostService
+) : IRedditService
 {
     private readonly IRedditClient _client = redditClient;
     private readonly IConverterService _converter = converterService;
+    private readonly IRedditPostService _redditPostService = redditPostService;
 
     public string ConvertToFile(FileType outputFileType, List<RedditPost> posts)
     {
@@ -22,16 +28,18 @@ public class RedditService(IRedditClient redditClient, IConverterService convert
     {
         var posts = await _client.GetTopPostsInPastDay(subreddit, count);
 
-        // Console.WriteLine($"Top {count} posts from r/{subreddit}:");
-        // foreach (var post in posts)
-        // {
-        //     var title = post.Title;
-        //     var upvotes = post.Upvotes;
-        //     Console.WriteLine(
-        //         $"🔹 {title} (Upvotes: {upvotes})\n - Link: https://reddit.com{post.Permalink}\n - Thumbnail: {post.Thumbnail}"
-        //     );
-        // }
+        await _redditPostService.UpsertRedditPosts(DateTime.Now.Date, posts);
 
         return posts;
+    }
+
+    public async Task<RedditPostsReport> GetTopPostsOnSpecificDay(string subreddit, DateTime date)
+    {
+        return await _redditPostService.GetReportByDate(subreddit, date);
+    }
+
+    public async Task<List<DateTime>> GetDatesWithTopPostsRegistered(int count)
+    {
+        return await _redditPostService.GetDatesWithReports(count);
     }
 }

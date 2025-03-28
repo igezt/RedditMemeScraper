@@ -1,6 +1,7 @@
 using RedditScraper.Services.Adapters.Models.Enums;
 using RedditScraper.Services.Converter.Adapters;
 using RedditScraper.Services.RedditClient.Models;
+using RedditScraper.Services.RedditPosts.Models;
 
 namespace RedditScraper.Services.Converter;
 
@@ -21,8 +22,7 @@ public class ConverterService : IConverterService
             );
         }
 
-        var fileName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
-        // var fileName = "";
+        var fileName = DateTime.UtcNow.ToString("dd-MM-yyyy_HHmmss");
 
         return adapter.Adapt(posts, fileName);
     }
