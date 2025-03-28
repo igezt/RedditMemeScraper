@@ -79,7 +79,7 @@ public class PastDayService(ILogger<PastDayService> logger, IRedditService reddi
             _ => RedditScraper.Services.Adapters.Models.Enums.FileType.HTML, // Default to HTML
         };
 
-        var filePath = _redditService.ConvertToFile(fileType, posts);
+        var filePath = await _redditService.ConvertToFile(fileType, posts);
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         var fileToSend = InputFile.FromStream(fileStream);
 
@@ -164,7 +164,7 @@ public class PastDayService(ILogger<PastDayService> logger, IRedditService reddi
             await _redditService.GetTopPostsOnSpecificDay("memes", parsedDate)
         ).RedditPosts;
 
-        var filePath = _redditService.ConvertToFile(FileType.HTML, posts);
+        var filePath = await _redditService.ConvertToFile(FileType.HTML, posts);
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         var fileToSend = InputFile.FromStream(fileStream);
 

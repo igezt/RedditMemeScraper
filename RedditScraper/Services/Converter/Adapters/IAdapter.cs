@@ -5,5 +5,5 @@ namespace RedditScraper.Services.Converter.Adapters;
 
 public interface IAdapter
 {
-    string Adapt(List<RedditPost> posts, string fileName);
+    Task<string> Adapt(List<RedditPost> posts, string fileName);
 }

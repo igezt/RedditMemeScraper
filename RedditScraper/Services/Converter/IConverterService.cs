@@ -6,5 +6,5 @@ namespace RedditScraper.Services.Converter;
 
 public interface IConverterService
 {
-    public string Convert(FileType outputFileType, List<RedditPost> posts);
+    public Task<string> Convert(FileType outputFileType, List<RedditPost> posts);
 }

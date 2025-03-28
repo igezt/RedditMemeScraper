@@ -80,7 +80,9 @@ public class RedditPost
 
         sb.AppendLine("<table border='1' cellpadding='5' cellspacing='0'>");
         sb.AppendLine("<tr><th>Property</th><th>Value</th></tr>");
-        sb.AppendLine($"<tr><td><strong>Meme</strong></td><td><img src='{Url}'/></td></tr>");
+        sb.AppendLine(
+            $"<tr><td><strong>Meme</strong></td><td><img src='{Url}' width='300' height='200'/></td></tr>"
+        );
         sb.AppendLine($"<tr><td><strong>Id</strong></td><td>{RedditId}</td></tr>");
         sb.AppendLine($"<tr><td><strong>Title</strong></td><td>{Title}</td></tr>");
         sb.AppendLine($"<tr><td><strong>Subreddit</strong></td><td>{Subreddit}</td></tr>");

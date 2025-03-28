@@ -10,7 +10,27 @@ public class HtmlAdapter : IAdapter
 {
     private static readonly string OUTPUT_FILE_PATH = "./Output/Html";
 
-    public string Adapt(List<RedditPost> posts, string fileName)
+    private static readonly HtmlAdapter _singleton = new();
+
+    public static HtmlAdapter Create()
+    {
+        return _singleton;
+    }
+
+    public async Task<string> Adapt(List<RedditPost> posts, string fileName)
+    {
+        var htmlString = ConvertToHtmlString(posts);
+
+        Directory.CreateDirectory(OUTPUT_FILE_PATH);
+
+        var outputFilePath = $"{OUTPUT_FILE_PATH}/{fileName}.html";
+
+        File.WriteAllText(outputFilePath, htmlString);
+
+        return outputFilePath;
+    }
+
+    public static string ConvertToHtmlString(List<RedditPost> posts, bool withPageBreaks = false)
     {
         var html = new StringBuilder();
 
@@ -19,7 +39,7 @@ public class HtmlAdapter : IAdapter
         html.AppendLine("<body>");
         html.AppendLine(
             string.Join(
-                "\n\n",
+                withPageBreaks ? "<div break-after: page></div>" : "\n\n",
                 posts.Select(
                     (post, i) => $"<h1>Reddit Post {i + 1} Details</h1> \n {post.ToHtml()}"
                 )
@@ -27,16 +47,7 @@ public class HtmlAdapter : IAdapter
         );
         html.AppendLine("</body>");
         html.AppendLine("</html>");
-
-        var currentDateTime = DateTime.Now.ToString();
-
-        Directory.CreateDirectory(OUTPUT_FILE_PATH);
-
-        var outputFilePath = $"{OUTPUT_FILE_PATH}/{fileName}.html";
-
-        File.WriteAllText(outputFilePath, html.ToString());
-
-        return outputFilePath;
+        return html.ToString();
     }
 
     private static void AddStyle(StringBuilder html)
@@ -53,6 +64,14 @@ public class HtmlAdapter : IAdapter
         html.AppendLine("tr:hover { background-color: #ddd; }");
         html.AppendLine("td a { color: #ff4500; text-decoration: none; }");
         html.AppendLine("td a:hover { text-decoration: underline; }");
+        html.AppendLine(
+            @"
+        td, th {
+            word-wrap: break-word;
+            white-space: normal; /* Ensure that long words are broken and wrapped */
+        }
+        "
+        );
         html.AppendLine("</style>");
     }
 }

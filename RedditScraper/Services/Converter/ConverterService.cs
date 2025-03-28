@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using RedditScraper.Services.Adapters.Models.Enums;
 using RedditScraper.Services.Converter.Adapters;
 using RedditScraper.Services.RedditClient.Models;
@@ -11,9 +12,10 @@ public class ConverterService : IConverterService
     {
         { FileType.MARKDOWN, new MarkdownAdapter() },
         { FileType.HTML, new HtmlAdapter() },
+        { FileType.PDF, new PdfAdapter() },
     };
 
-    public string Convert(FileType outputFileType, List<RedditPost> posts)
+    public async Task<string> Convert(FileType outputFileType, List<RedditPost> posts)
     {
         if (!adapters.TryGetValue(outputFileType, out var adapter))
         {
@@ -24,6 +26,6 @@ public class ConverterService : IConverterService
 
         var fileName = DateTime.UtcNow.ToString("dd-MM-yyyy_HHmmss");
 
-        return adapter.Adapt(posts, fileName);
+        return await adapter.Adapt(posts, fileName);
     }
 }

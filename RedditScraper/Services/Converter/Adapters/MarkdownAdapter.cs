@@ -7,7 +7,14 @@ public class MarkdownAdapter : IAdapter
 {
     private static readonly string OUTPUT_FILE_PATH = "./Output/Markdown";
 
-    public string Adapt(List<RedditPost> posts, string fileName)
+    private static readonly MarkdownAdapter _singleton = new();
+
+    public static MarkdownAdapter Create()
+    {
+        return _singleton;
+    }
+
+    public async Task<string> Adapt(List<RedditPost> posts, string fileName)
     {
         var markdownTables = string.Join(
             "\n\n",

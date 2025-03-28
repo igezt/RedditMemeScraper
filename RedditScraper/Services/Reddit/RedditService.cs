@@ -19,9 +19,9 @@ public class RedditService(
     private readonly IConverterService _converter = converterService;
     private readonly IRedditPostService _redditPostService = redditPostService;
 
-    public string ConvertToFile(FileType outputFileType, List<RedditPost> posts)
+    public async Task<string> ConvertToFile(FileType outputFileType, List<RedditPost> posts)
     {
-        return _converter.Convert(outputFileType, posts);
+        return await _converter.Convert(outputFileType, posts);
     }
 
     public async Task<List<RedditPost>> GetTopPostsInPastDay(string subreddit, int count)
