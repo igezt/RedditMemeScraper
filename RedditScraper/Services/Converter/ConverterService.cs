@@ -15,7 +15,11 @@ public class ConverterService : IConverterService
         { FileType.PDF, new PdfAdapter() },
     };
 
-    public async Task<string> Convert(FileType outputFileType, List<RedditPost> posts)
+    public async Task<string> Convert(
+        FileType outputFileType,
+        List<RedditPost> posts,
+        string fileName
+    )
     {
         if (!adapters.TryGetValue(outputFileType, out var adapter))
         {
@@ -24,7 +28,7 @@ public class ConverterService : IConverterService
             );
         }
 
-        var fileName = DateTime.UtcNow.ToString("dd-MM-yyyy_HHmmss");
+        // var fileName = DateTime.UtcNow.ToString("dd-MM-yyyy_HHmmss");
 
         return await adapter.Adapt(posts, fileName);
     }

@@ -18,4 +18,14 @@ public class RedditPostsReport
 
     [BsonElement("subreddit")]
     public string Subreddit { get; set; } = string.Empty;
+
+    public override string ToString()
+    {
+        return $"RedditPostsReport:\n"
+            + $"ID: {Id}\n"
+            + $"Subreddit: {Subreddit}\n"
+            + $"Date: {Date:yyyy-MM-dd HH:mm:ss} UTC\n"
+            + $"Reddit Posts Count: {RedditPosts.Count}\n";
+        // + $"Posts:\n{string.Join("\n", RedditPosts)}";
+    }
 }

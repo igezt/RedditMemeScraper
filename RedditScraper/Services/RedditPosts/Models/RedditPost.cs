@@ -100,4 +100,20 @@ public class RedditPost
 
         return sb.ToString();
     }
+
+    // public override string ToString()
+    // {
+    //     return $"RedditPost:\n"
+    //         + $"ID: {RedditId}\n"
+    //         + $"Title: {Title}\n"
+    //         + $"Subreddit: {Subreddit}\n"
+    //         + $"Author: {Author}\n"
+    //         + $"Upvotes: {Upvotes}, Downvotes: {Downvotes}, Score: {Score}\n"
+    //         + $"Comments: {NumComments}\n"
+    //         + $"Created: {CreatedAt:yyyy-MM-dd HH:mm:ss} UTC\n"
+    //         + $"Permalink: https://reddit.com{Permalink}\n"
+    //         + $"Image URL: {Url}\n"
+    //         + $"Thumbnail: {Thumbnail}\n"
+    //         + $"SelfText: {(string.IsNullOrWhiteSpace(SelfText) ? "N/A" : SelfText.Substring(0, Math.Min(100, SelfText.Length)) + (SelfText.Length > 100 ? "..." : ""))}";
+    // }
 }

@@ -1,5 +1,6 @@
 using RedditScraper.Services.Adapters.Models.Enums;
 using RedditScraper.Services.Reddit;
+using RedditScraper.Services.RedditPosts.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -13,6 +14,11 @@ public class PastDayService(ILogger<PastDayService> logger, IRedditService reddi
     private readonly ILogger<PastDayService> _logger = logger;
 
     private readonly string dateFormat = "dd/MM/yyyy";
+    private readonly string displayDateFormat = "dd MMM yyyy";
+
+    private static readonly TimeZoneInfo SingaporeTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+        "Singapore Standard Time"
+    );
 
     public async void HandleRequestPastDayPosts(
         ITelegramBotClient botClient,
@@ -54,44 +60,55 @@ public class PastDayService(ILogger<PastDayService> logger, IRedditService reddi
 
         if (callbackQuery is null)
         {
-            _logger.LogWarning("HandleGetPastDayPosts was called with empty callback query.");
-            return;
+            var err = "HandleGetPastDayPosts was called with empty callback query.";
+            _logger.LogWarning(err);
+            throw new InvalidDataException(err);
         }
 
         if (selectedFileType is null)
         {
-            _logger.LogWarning("HandleGetPastDayPosts was called with null file type.");
-            return;
+            var err = "HandleGetPastDayPosts was called with null file type.";
+            _logger.LogWarning(err);
+            throw new InvalidDataException(err);
+        }
+
+        if (callbackQuery.Message is null)
+        {
+            var err = "No original message was detected.";
+            _logger.LogWarning(err);
+            throw new InvalidDataException(err);
         }
 
         await botClient.AnswerCallbackQuery(
             callbackQuery.Id,
-            $"You selected {selectedFileType}",
+            $"Fetching the latest top posts from r/memes... Please wait.",
             cancellationToken: cancellationToken
         );
 
         var posts = await _redditService.GetTopPostsInPastDay("memes", 20);
         var fileType = selectedFileType switch
         {
-            "MARKDOWN" => RedditScraper.Services.Adapters.Models.Enums.FileType.MARKDOWN,
-            "PDF" => RedditScraper.Services.Adapters.Models.Enums.FileType.PDF,
-            "HTML" => RedditScraper.Services.Adapters.Models.Enums.FileType.HTML,
-            _ => RedditScraper.Services.Adapters.Models.Enums.FileType.HTML, // Default to HTML
+            "MARKDOWN" => FileType.MARKDOWN,
+            "PDF" => FileType.PDF,
+            "HTML" => FileType.HTML,
+            _ => FileType.PDF,
         };
 
-        var filePath = await _redditService.ConvertToFile(fileType, posts);
+        var fileName = DateTime.Now.ToString(displayDateFormat);
+
+        var filePath = await _redditService.ConvertToFile(fileType, posts, fileName);
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         var fileToSend = InputFile.FromStream(fileStream);
-
-        if (callbackQuery.Message is null)
-        {
-            _logger.LogWarning("No original message was detected.");
-            return;
-        }
 
         await botClient.SendDocument(
             callbackQuery.Message.Chat,
             fileToSend,
+            cancellationToken: cancellationToken
+        );
+
+        await botClient.SendMessage(
+            callbackQuery.Message.Chat,
+            $"Here is your report!",
             cancellationToken: cancellationToken
         );
     }
@@ -102,20 +119,23 @@ public class PastDayService(ILogger<PastDayService> logger, IRedditService reddi
         CancellationToken cancellationToken
     )
     {
-        var dates = await _redditService.GetDatesWithTopPostsRegistered(10);
+        var dates = await _redditService.GetDatesWithTopPostsRegistered(5);
 
-        var buttons = dates.Select(
+        var buttons = dates.Select<DateTime, IEnumerable<InlineKeyboardButton>>(
             (date) =>
-                InlineKeyboardButton.WithCallbackData(
-                    date.ToString(dateFormat),
-                    $"OldReport-{date.ToString(dateFormat)}"
-                )
+
+                [
+                    InlineKeyboardButton.WithCallbackData(
+                        ConvertUtcToSingaporeTime(date).ToString(displayDateFormat),
+                        $"OldReport-{ConvertUtcToSingaporeTime(date).ToString(dateFormat)}"
+                    ),
+                ]
         );
 
         var fileTypeMessage = "Please select a report to re-generate:";
 
         // Create inline keyboard with buttons
-        var inlineKeyboard = new InlineKeyboardMarkup([buttons]);
+        var inlineKeyboard = new InlineKeyboardMarkup(buttons);
 
         // Send the message with the inline keyboard
         await botClient.SendMessage(
@@ -148,23 +168,25 @@ public class PastDayService(ILogger<PastDayService> logger, IRedditService reddi
             return;
         }
 
-        DateTime parsedDate = DateTime.ParseExact(
+        DateTime singaporeTime = DateTime.ParseExact(
             dateStr,
             "dd/MM/yyyy",
             System.Globalization.CultureInfo.InvariantCulture
         );
 
+        DateTime utcTime = ConvertSingaporeTimeToUtc(singaporeTime);
+
         await botClient.AnswerCallbackQuery(
             callbackQuery.Id,
-            $"You selected {dateStr}",
+            $"Hold tight! A PDF report for {dateStr} is on its way!",
             cancellationToken: cancellationToken
         );
 
-        var posts = (
-            await _redditService.GetTopPostsOnSpecificDay("memes", parsedDate)
-        ).RedditPosts;
+        var posts = (await _redditService.GetTopPostsOnSpecificDay("memes", utcTime)).RedditPosts;
 
-        var filePath = await _redditService.ConvertToFile(FileType.HTML, posts);
+        var fileName = singaporeTime.ToString(displayDateFormat);
+
+        var filePath = await _redditService.ConvertToFile(FileType.PDF, posts, fileName);
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         var fileToSend = InputFile.FromStream(fileStream);
 
@@ -179,5 +201,21 @@ public class PastDayService(ILogger<PastDayService> logger, IRedditService reddi
             fileToSend,
             cancellationToken: cancellationToken
         );
+
+        await botClient.SendMessage(
+            callbackQuery.Message.Chat,
+            $"Here is your report from {dateStr}!",
+            cancellationToken: cancellationToken
+        );
+    }
+
+    private static DateTime ConvertUtcToSingaporeTime(DateTime utcTime)
+    {
+        return TimeZoneInfo.ConvertTimeFromUtc(utcTime, SingaporeTimeZone);
+    }
+
+    private static DateTime ConvertSingaporeTimeToUtc(DateTime singaporeTime)
+    {
+        return TimeZoneInfo.ConvertTimeToUtc(singaporeTime, SingaporeTimeZone);
     }
 }

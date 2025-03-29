@@ -23,19 +23,26 @@ public class RedditPostService(IRedditPostRepo redditPostRepo) : IRedditPostServ
 
     public async Task<RedditPostsReport> GetReportByDate(string subreddit, DateTime date)
     {
-        var dateFilter = Builders<RedditPostsReport>.Filter.Eq(r => r.Date.Date, date.Date);
+        var dateFilter = Builders<RedditPostsReport>.Filter.Eq(r => r.Date, date);
         var subredditFilter = Builders<RedditPostsReport>.Filter.Eq(r => r.Subreddit, subreddit);
         var filter = Builders<RedditPostsReport>.Filter.And(dateFilter, subredditFilter);
-        return (await _redditPostRepo.GetReports(filter)).First();
+        var res = await _redditPostRepo.GetReports(filter);
+        if (res.Count == 0)
+        {
+            throw new InvalidDataException(
+                $"There was no report that suited the filter: {date} and {subreddit}"
+            );
+        }
+        return res.First();
     }
 
     public Task<bool> UpsertRedditPosts(DateTime date, List<RedditPost> posts)
     {
-        var filter = Builders<RedditPostsReport>.Filter.Eq(r => r.Date, date.Date);
+        var filter = Builders<RedditPostsReport>.Filter.Eq(r => r.Date, date);
 
         var update = Builders<RedditPostsReport>
             .Update.Set(r => r.RedditPosts, posts)
-            .Set(r => r.Date, date.Date)
+            .Set(r => r.Date, date)
             .Set(r => r.Subreddit, posts.First().Subreddit);
 
         var options = new UpdateOptions { IsUpsert = true };

@@ -1,4 +1,6 @@
 using MongoDB.Driver;
+using RedditScraper.Helper.Environment.Enums;
+using RedditScraper.Services.Environment;
 using RedditScraper.Services.Reddit;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -21,11 +23,12 @@ public class TelegramBotService : ITelegramBotService
     public TelegramBotService(
         IRedditService redditService,
         IPastDayService pastDayService,
+        IEnvService envService,
         ILogger<TelegramBotService> logger
     )
     {
         BOT_TOKEN =
-            Environment.GetEnvironmentVariable("TELEGRAM_BOT_TOKEN")
+            envService.GetEnvVariable(EnvVariableKeys.TELEGRAM_BOT_TOKEN)
             ?? throw new InvalidOperationException("There is no telegram bot token present");
         BotClient = new TelegramBotClient(BOT_TOKEN);
         _pastDayService = pastDayService;
@@ -43,13 +46,14 @@ public class TelegramBotService : ITelegramBotService
                 new BotCommand()
                 {
                     Command = "new_report",
-                    Description = "Returns a report of the top 20 posts from r/memes from reddit",
+                    Description =
+                        "To get the latest top posts, simply type /new_report. You can choose between Markdown, PDF, or HTML format for your report.",
                 },
                 new BotCommand()
                 {
                     Command = "old_report",
                     Description =
-                        "Returns a report that was already generated of the top 20 posts from r/memes from reddit",
+                        "To access previous reports, choose the date you’re interested in. We have data for the past few days available.",
                 },
             ]
         );
@@ -65,22 +69,34 @@ public class TelegramBotService : ITelegramBotService
         CancellationToken cancellationToken
     )
     {
-        if (update.CallbackQuery != null)
+        try
         {
-            HandleCallbackQuery(botClient, update, cancellationToken);
+            if (update.CallbackQuery != null)
+            {
+                HandleCallbackQuery(botClient, update, cancellationToken);
+                return;
+            }
+            var command = update.Message?.Text?.ToLower();
+            switch (command)
+            {
+                case "/new_report":
+                    _pastDayService.HandleRequestPastDayPosts(botClient, update, cancellationToken);
+                    break;
+                case "/old_report":
+                    _pastDayService.HandleRequestOldPosts(botClient, update, cancellationToken);
+                    break;
+                default:
+                    _logger.LogWarning($"An unidentified command ({command}) was sent in");
+                    break;
+            }
         }
-        var command = update.Message?.Text?.ToLower();
-        switch (command)
+        catch (Exception e)
         {
-            case "/new_report":
-                _pastDayService.HandleRequestPastDayPosts(botClient, update, cancellationToken);
-                break;
-            case "/old_report":
-                _pastDayService.HandleRequestOldPosts(botClient, update, cancellationToken);
-                break;
-            default:
-                _logger.LogWarning($"An unidentified command ({command}) was sent in");
-                break;
+            await botClient.SendMessage(
+                update.Message?.Chat,
+                $"Oh dear looks like something went wrong",
+                cancellationToken: cancellationToken
+            );
         }
     }
 
@@ -108,11 +124,13 @@ public class TelegramBotService : ITelegramBotService
         switch (callbackQueryType)
         {
             case "NewReport":
+                _logger.LogInformation($"Handling get past day posts");
                 _pastDayService.HandleGetPastDayPosts(botClient, update, cancellationToken);
                 break;
 
             case "OldReport":
-                _pastDayService.HandleGetPastDayPosts(botClient, update, cancellationToken);
+                _logger.LogInformation($"Handling get old posts");
+                _pastDayService.HandleGetOldReport(botClient, update, cancellationToken);
                 break;
         }
     }

@@ -12697,19 +12697,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\pnws0\\.nuget\\packages\\": {}
+    "/Users/pierce/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\pnws0\\OneDrive\\Desktop\\Projects\\RedditMemeScraper\\TelegramBot\\TelegramBot.csproj",
+      "projectUniqueName": "/Users/pierce/Documents/Projects/RedditMemeScraper/TelegramBot/TelegramBot.csproj",
       "projectName": "TelegramBot",
-      "projectPath": "C:\\Users\\pnws0\\OneDrive\\Desktop\\Projects\\RedditMemeScraper\\TelegramBot\\TelegramBot.csproj",
-      "packagesPath": "C:\\Users\\pnws0\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\pnws0\\OneDrive\\Desktop\\Projects\\RedditMemeScraper\\TelegramBot\\obj\\",
+      "projectPath": "/Users/pierce/Documents/Projects/RedditMemeScraper/TelegramBot/TelegramBot.csproj",
+      "packagesPath": "/Users/pierce/.nuget/packages/",
+      "outputPath": "/Users/pierce/Documents/Projects/RedditMemeScraper/TelegramBot/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\pnws0\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/pierce/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -12721,8 +12721,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\pnws0\\OneDrive\\Desktop\\Projects\\RedditMemeScraper\\RedditScraper\\RedditScraper.csproj": {
-              "projectPath": "C:\\Users\\pnws0\\OneDrive\\Desktop\\Projects\\RedditMemeScraper\\RedditScraper\\RedditScraper.csproj"
+            "/Users/pierce/Documents/Projects/RedditMemeScraper/RedditScraper/RedditScraper.csproj": {
+              "projectPath": "/Users/pierce/Documents/Projects/RedditMemeScraper/RedditScraper/RedditScraper.csproj"
             }
           }
         }
@@ -12786,7 +12786,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.402/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
