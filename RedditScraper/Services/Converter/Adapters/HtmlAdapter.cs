@@ -45,6 +45,11 @@ public class HtmlAdapter : IAdapter
                 )
             )
         );
+
+        AddRankByCommentsTable(html, posts);
+
+        AddRankByTimeTable(html, posts);
+
         html.AppendLine("</body>");
         html.AppendLine("</html>");
         return html.ToString();
@@ -73,5 +78,84 @@ public class HtmlAdapter : IAdapter
         "
         );
         html.AppendLine("</style>");
+        html.AppendLine("<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>");
+    }
+
+    private static void AddRankByCommentsTable(StringBuilder html, List<RedditPost> posts)
+    {
+        var sortedPosts = posts.OrderByDescending(post => post.NumComments).ToList();
+
+        html.AppendLine("<h1>Top 20 Memes Ranked by Number of Comments</h1>");
+
+        html.AppendLine("<table>");
+        html.AppendLine(
+            "<tr><th>Rank</th><th>Title</th><th>Author</th><th>Subreddit</th><th>Upvotes</th><th>Downvotes</th><th>Score</th><th>Comments</th><th>Post Link</th></tr>"
+        );
+
+        // Generate a row for each post
+        int rank = 1;
+        foreach (var post in sortedPosts)
+        {
+            html.AppendLine("<tr>");
+            html.AppendLine($"<td>{rank}</td>");
+            html.AppendLine($"<td>{post.Title}</td>");
+            html.AppendLine($"<td>{post.Author}</td>");
+            html.AppendLine($"<td>{post.Subreddit}</td>");
+            html.AppendLine($"<td>{post.Upvotes}</td>");
+            html.AppendLine($"<td>{post.Downvotes}</td>");
+            html.AppendLine($"<td>{post.Score}</td>");
+            html.AppendLine($"<td>{post.NumComments}</td>");
+            html.AppendLine($"<td><a href='https://reddit.com{post.Permalink}'>View Post</a></td>");
+            html.AppendLine("</tr>");
+            rank++;
+        }
+
+        html.AppendLine("</table>");
+    }
+
+    private static void AddRankByTimeTable(StringBuilder html, List<RedditPost> posts)
+    {
+        // Sort posts by creation time (ascending)
+        var sortedPosts = posts
+            .OrderBy(post => ConvertUtcToSingaporeTime(post.CreatedAt).TimeOfDay)
+            .ToList();
+
+        html.AppendLine("<h1>Reddit Posts Organized by Time Created</h1>");
+
+        html.AppendLine("<table>");
+        html.AppendLine(
+            "<tr><th>Rank</th><th>Title</th><th>Author</th><th>Subreddit</th><th>Upvotes</th><th>Downvotes</th><th>Score</th><th>Comments</th><th>Time Created</th><th>Post Link</th></tr>"
+        );
+
+        // Generate a row for each post
+        int rank = 1;
+        foreach (var post in sortedPosts)
+        {
+            html.AppendLine("<tr>");
+            html.AppendLine($"<td>{rank}</td>");
+            html.AppendLine($"<td>{post.Title}</td>");
+            html.AppendLine($"<td>{post.Author}</td>");
+            html.AppendLine($"<td>{post.Subreddit}</td>");
+            html.AppendLine($"<td>{post.Upvotes}</td>");
+            html.AppendLine($"<td>{post.Downvotes}</td>");
+            html.AppendLine($"<td>{post.Score}</td>");
+            html.AppendLine($"<td>{post.NumComments}</td>");
+            html.AppendLine(
+                $"<td>{ConvertUtcToSingaporeTime(post.CreatedAt).ToString("HH:mm:ss")}</td>"
+            );
+            html.AppendLine($"<td><a href='https://reddit.com{post.Permalink}'>View Post</a></td>");
+            html.AppendLine("</tr>");
+            rank++;
+        }
+
+        html.AppendLine("</table>");
+    }
+
+    private static DateTime ConvertUtcToSingaporeTime(DateTime utcTime)
+    {
+        return TimeZoneInfo.ConvertTimeFromUtc(
+            utcTime,
+            TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time")
+        );
     }
 }
